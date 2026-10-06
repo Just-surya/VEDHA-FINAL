@@ -143,15 +143,51 @@
       "contactEmail": "rahul.n@vedha.edu.in",
       "guardianName": "Narayanan Namboodiri",
       "createdAt": "2026-06-01T08:30:00.000Z"
+    },
+    {
+      "name": "suryasevan",
+      "class": "10-A",
+      "marks": 100,
+      "attendance": 100,
+      "gender": "Male",
+      "contactEmail": "surya@gmail.com",
+      "guardianName": "janardhanan",
+      "grade": "A",
+      "createdAt": "2026-10-06T13:31:54.308Z",
+      "id": "P9_YzSdMZJk"
     }
   ],
   "attendanceTrend": [
-    { "month": "Jun", "attendance": 88 },
-    { "month": "Jul", "attendance": 91 },
-    { "month": "Aug", "attendance": 87 },
-    { "month": "Sep", "attendance": 92 },
-    { "month": "Oct", "attendance": 89 },
-    { "month": "Nov", "attendance": 90 }
+    {
+      "month": "Jun",
+      "attendance": 88,
+      "id": "joQ4_qv93hg"
+    },
+    {
+      "month": "Jul",
+      "attendance": 91,
+      "id": "itlbkr26Xrw"
+    },
+    {
+      "month": "Aug",
+      "attendance": 87,
+      "id": "Ph_exo4XnqI"
+    },
+    {
+      "month": "Sep",
+      "attendance": 92,
+      "id": "VKhmFu8zKTI"
+    },
+    {
+      "month": "Oct",
+      "attendance": 89,
+      "id": "bff9y9uxyDY"
+    },
+    {
+      "month": "Nov",
+      "attendance": 90,
+      "id": "x-BvNDcK7I4"
+    }
   ],
   "termMeta": {
     "currentTerm": "Term 2",
@@ -176,5 +212,6 @@
       "role": "Academic Coordinator",
       "department": "High School Wing"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
