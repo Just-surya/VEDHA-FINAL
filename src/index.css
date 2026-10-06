@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-vedha-dark: #12111f;
+    --color-vedha-card: #1c1b30;
+    --color-vedha-card-hover: #23223c;
+    --color-vedha-border: #282646;
+    --color-vedha-border-subtle: #38355c;
+    --color-vedha-purple: #8b85ff;
+    --color-vedha-purple-hover: #7b75f5;
+    --color-vedha-purple-dim: rgba(139, 133, 255, 0.12);
+    --color-vedha-amber: #f59e0b;
+    --color-vedha-green: #10b981;
+    --color-vedha-red: #ef4444;
+    --color-vedha-muted: #9490b8;
+  }
+
+  body {
+    background-color: #12111f;
+    color: #f1f0fb;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+  }
+}
+
+.font-serif-logo {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.font-devanagari {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #12111f;
+}
+::-webkit-scrollbar-thumb {
+  background: #2c2a4a;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8b85ff;
+}
