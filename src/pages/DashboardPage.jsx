@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { useStudents } from '../../hooks/useStudents';
-import { getAttendanceTrend, getTermMeta } from '../../services/statsService';
-import { computeDashboardStats } from '../../utils/statsCalculator';
+import { useStudents } from '../hooks/useStudents';
+import { getAttendanceTrend, getTermMeta } from '../services/statsService';
+import { computeDashboardStats } from '../utils/statsCalculator';
 
-import StatCard from '../../components/dashboard/StatCard';
-import ChartCard from '../../components/dashboard/ChartCard';
-import ClassAverageChart from '../../components/dashboard/ClassAverageChart';
-import GradeDistributionChart from '../../components/dashboard/GradeDistributionChart';
-import AttendanceTrendChart from '../../components/dashboard/AttendanceTrendChart';
-import TopPerformersList from '../../components/dashboard/TopPerformersList';
+import StatCard from '../components/dashboard/StatCard';
+import ChartCard from '../components/dashboard/ChartCard';
+import ClassAverageChart from '../components/dashboard/ClassAverageChart';
+import GradeDistributionChart from '../components/dashboard/GradeDistributionChart';
+import AttendanceTrendChart from '../components/dashboard/AttendanceTrendChart';
+import TopPerformersList from '../components/dashboard/TopPerformersList';
 
-import LoadingSpinner from '../../components/common/LoadingSpinner';
-import ErrorAlert from '../../components/common/ErrorAlert';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import ErrorAlert from '../components/common/ErrorAlert';
 
 import { 
   Users, 

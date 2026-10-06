@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { useStudents } from '../../hooks/useStudents';
-import StudentTable from '../../components/students/StudentTable';
-import StudentFormModal from '../../components/students/StudentFormModal';
-import StudentViewModal from '../../components/students/StudentViewModal';
-import DeleteConfirmModal from '../../components/common/DeleteConfirmModal';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
-import ErrorAlert from '../../components/common/ErrorAlert';
+import { useStudents } from '../hooks/useStudents';
+import StudentTable from '../components/students/StudentTable';
+import StudentFormModal from '../components/students/StudentFormModal';
+import StudentViewModal from '../components/students/StudentViewModal';
+import DeleteConfirmModal from '../components/common/DeleteConfirmModal';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import ErrorAlert from '../components/common/ErrorAlert';
 
 import { 
   UserPlus, 
