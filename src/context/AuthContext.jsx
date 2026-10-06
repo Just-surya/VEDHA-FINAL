@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import api from '../services/api';
 
 const AuthContext = createContext(null);
@@ -20,44 +20,49 @@ export function AuthProvider({ children }) {
   const login = async (username, password) => {
     setLoading(true);
     try {
-      // Allow slight network delay simulation for authentic experience
-      await new Promise(resolve => setTimeout(resolve, 300));
+      let userData = null;
 
-      // Try checking with API endpoint first
-      let staffMember = null;
       try {
-        const res = await api.get('/staff');
-        if (Array.isArray(res.data)) {
-          staffMember = res.data.find(
-            s => s.username === username.trim() && s.password === password.trim()
-          );
-        }
-      } catch {
-        // Fallback to demo credential check if server request fails
-      }
+        const res = await api.post('/auth/login', {
+          username: username.trim(),
+          password: password.trim(),
+        });
 
-      // Check credentials
-      if (!staffMember) {
+        if (res.data?.success && res.data?.user) {
+          userData = {
+            ...res.data.user,
+            token: res.data.token,
+            signedInAt: new Date().toISOString(),
+          };
+        }
+      } catch (err) {
+        // If server explicitly returned 401/400 (wrong credentials), propagate error
+        if (
+          err.status === 401 ||
+          err.status === 400 ||
+          err.response?.status === 401 ||
+          err.response?.status === 400
+        ) {
+          throw err;
+        }
+
+        // If backend server is unreachable (offline mode fallback)
         if (username.trim() === 'admin' && password.trim() === 'admin123') {
-          staffMember = {
-            id: '1',
+          userData = {
+            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
             username: 'admin',
             name: 'Staff Administrator',
             role: 'Academic Coordinator',
-            department: 'Senior Secondary',
+            department: 'High School Wing',
+            token: `token-${Date.now()}`,
+            signedInAt: new Date().toISOString(),
           };
+        } else {
+          throw err;
         }
       }
 
-      if (staffMember) {
-        const userData = {
-          id: staffMember.id,
-          username: staffMember.username,
-          name: staffMember.name || 'Staff Member',
-          role: staffMember.role || 'Staff Coordinator',
-          token: `token-${Date.now()}`,
-          signedInAt: new Date().toISOString(),
-        };
+      if (userData) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
         setUser(userData);
         return { success: true, user: userData };

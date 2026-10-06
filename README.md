@@ -6,84 +6,104 @@
 
 ## 🛠 Tech Stack
 
-- **Frontend Core**: React 19 + Vite (JavaScript)
+### Frontend (SPA)
+- **Framework**: React 19 + Vite (JavaScript)
 - **Styling**: Tailwind CSS v4 (Custom dark palette `#12111f`, card surface `#1c1b30`, soft violet `#8b85ff`, amber `#f59e0b`)
-- **Routing**: React Router v7 with protected route guards
-- **API Client**: Axios with configured baseURL, interceptors, and error handling
+- **Routing**: React Router v7 with route-level code splitting (`React.lazy` + `Suspense`) and `<ProtectedRoute>` guards
+- **API Client**: Axios instance with centralized `VITE_API_URL` configuration and JWT bearer interceptor
 - **Charts & Visualization**: Recharts (Custom dark-themed bar charts and line charts)
 - **Icons**: Lucide React
-- **Mock REST API**: `json-server` serving `db.json` on port `5000`
-- **Process Orchestration**: `concurrently` to run Vite and json-server in a single command
+- **Deployment**: Optimized for Vercel with `vercel.json` SPA rewrite rules
+
+### Backend (REST API)
+- **Runtime**: Node.js + Express
+- **Authentication**: JWT (JSON Web Tokens) with `bcryptjs` password hashing
+- **Security**: Configurable CORS with `FRONTEND_URL` origin restriction
+- **Database**: **Supabase PostgreSQL** cloud database (with automatic fallback to local store if credentials not yet configured)
+- **Deployment**: Deployable to Render, Railway, Fly.io, Heroku, or Supabase Edge Functions
 
 ---
 
-## 🏛 Architecture Layers
-
-The codebase enforces strict separation of concerns across 5 modular layers:
+## 🏛 Project Architecture
 
 ```
-src/
-├── components/          # UI Layer (Reusable primitives)
-│   ├── common/          # LoadingSpinner, ErrorAlert, DeleteConfirmModal
-│   ├── dashboard/       # StatCard, ChartCard, ClassAverageChart, GradeDistributionChart, 
-│   │                    # AttendanceTrendChart, TopPerformersList
-│   ├── layout/          # Navbar (brand, nav links, staff logout, mobile menu), Layout wrapper
-│   └── students/        # StudentTable, StudentFormModal (Add/Edit), StudentViewModal
-├── context/             # State Layer (Session & Auth Context)
-│   └── AuthContext.jsx  # Staff authentication state, localStorage persistence, login/logout
-├── hooks/               # State Layer (Custom React Hooks)
-│   ├── useAuth.js       # Authentication hook
-│   └── useStudents.js   # Student CRUD state hook (students, loading, error, refresh)
-├── routes/              # Routing & Security Layer
-│   ├── AppRoutes.jsx    # Page route declarations
-│   └── ProtectedRoute.jsx # Guard redirecting unauthenticated users to /signin
-├── services/            # Service Layer (Network & API communication)
-│   ├── api.js           # Axios instance with VITE_API_URL and interceptors
-│   ├── studentService.js # Full CRUD methods (getStudents, addStudent, updateStudent, deleteStudent)
-│   └── statsService.js  # Attendance trends and term benchmark queries
-├── utils/               # Domain Utilities
-│   ├── gradeCalculator.js # Standardized grading logic (A, B, C, D, F) & badge styles
-│   └── statsCalculator.js # Dynamic computation of term metrics from live student data
-└── pages/               # UI Page Views
-    ├── SignInPage.jsx   # Split-screen sign-in with validation and demo auto-fill
-    ├── DashboardPage.jsx # Term 2 summary cards, 3 analytics charts, top performers
-    ├── StudentsPage.jsx # Student records table, search, class filter, sorting, CRUD modals
-    └── NotFoundPage.jsx # 404 fallback page
+GitHub
+│
+├── React/Vite frontend (src/)
+│       │
+│       └── Deployed to Vercel (dist/)
+│               │
+│               ↓ HTTPS / REST
+│
+└── Node.js/Express backend (backend/)
+        │
+        └── Deployed to Cloud Hosting (Render / Railway)
+                │
+                ↓ Secure Database Connection
+                │
+        Supabase PostgreSQL Cloud
+```
+
+### Folder Structure
+```
+VEDHA2/
+├── backend/                    # Production Node.js + Express REST API
+│   ├── src/
+│   │   ├── config/             # Environment & Supabase client configuration
+│   │   ├── controllers/        # authController, studentController, statsController
+│   │   ├── middleware/         # JWT auth middleware, centralized error handling
+│   │   ├── routes/             # /api/auth, /api/students, /api/stats
+│   │   ├── app.js              # Express app setup, CORS, JSON parser
+│   │   └── server.js           # Server entry point on PORT
+│   ├── scripts/
+│   │   └── migrateData.js      # Script to migrate local data into Supabase
+│   ├── schema.sql              # Supabase PostgreSQL schema DDL & seed queries
+│   ├── .env.example            # Backend environment variables template
+│   └── package.json            # Backend dependencies & scripts
+│
+├── src/                        # React Frontend
+│   ├── components/             # Reusable UI primitives (Dashboard, Students, Layout, Common)
+│   ├── context/                # AuthContext (JWT session & persistence)
+│   ├── hooks/                  # useAuth, useStudents custom hooks
+│   ├── pages/                  # Lazy-loaded views (SignIn, Dashboard, Students, NotFound)
+│   ├── routes/                 # ProtectedRoute, AppRoutes with Suspense code splitting
+│   ├── services/               # Axios API client, studentService, statsService
+│   └── utils/                  # Grade and stats calculation domain utilities
+│
+├── vercel.json                 # Vercel SPA routing configuration
+├── db.json                     # Initial seed reference dataset
+├── package.json                # Project orchestration scripts
+└── .env.example                # Frontend environment template
 ```
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Running Locally
 
-### 1. Prerequisites
-- **Node.js**: v18+ (tested on Node v24)
-- **npm**: v9+
-
-### 2. Installation
-Clone the repository and install dependencies:
+### 1. Install Dependencies
 ```bash
-git clone <repo-url>
-cd VEDHA2
+# Install frontend dependencies
 npm install
+
+# Install backend dependencies
+cd backend && npm install && cd ..
 ```
 
-### 3. Run Development Environment
-To start **both** the mock REST API (`json-server` on port `5000`) and the Vite frontend application concurrently:
+### 2. Start Both Frontend and Backend Concurrently
 ```bash
 npm run dev
 ```
 
-The application will be accessible at:
-- **Frontend Dashboard**: [http://localhost:3000](http://localhost:3000)
-- **Mock REST API**: [http://localhost:5000](http://localhost:5000)
+This starts:
+- **Backend API**: `http://localhost:5000` (`http://localhost:5000/api`)
+- **Frontend App**: `http://localhost:3000`
 
-### 4. Running Components Separately (Optional)
-If you prefer running the mock backend and Vite client in separate terminal windows:
+### 3. Running Separately (Optional)
 ```bash
-# Terminal 1: Run json-server mock API
-npm run api
+# Terminal 1: Run backend API
+npm run server:dev
 
-# Terminal 2: Run Vite dev server
+# Terminal 2: Run frontend client
 npm run dev:client
 ```
 
@@ -91,113 +111,75 @@ npm run dev:client
 
 ## 🔐 Staff Sign-In & Demo Credentials
 
-Access to all dashboard pages is protected behind the staff authentication guard.
-
 | Role | Username | Password |
 |---|---|---|
 | **Academic Coordinator** | `admin` | `admin123` |
 
-> A one-click **"Auto-fill"** helper button is embedded directly into the sign-in form for rapid evaluation and testing.
+> An **"Auto-fill"** helper button is embedded directly into the sign-in form for rapid evaluation and testing.
 
 ---
 
-## ✨ Features
+## 🗄️ Setting Up Supabase Cloud Database
 
-### 1. Authentication & Security
-- Split-screen design: Left solid purple brand panel with Devanagari **वेद** insignia, serif **Vedha** wordmark, and school mission tagline; Right dark credential form.
-- Form validation with inline error highlights.
-- Clear error notification on authentication failure with retry capability.
-- Session persistence via `localStorage` with header synchronization and secure logout.
-- All application routes except `/signin` are guarded by `<ProtectedRoute>`.
+### 1. Create a Supabase Project
+1. Go to [supabase.com](https://supabase.com) and create a free project.
+2. In the Supabase Dashboard, open the **SQL Editor**.
+3. Copy the contents of `backend/schema.sql` and click **Run**.
+   - This creates the `users`, `students`, `attendance_trend`, and `term_meta` tables with constraints, indexes, and initial seed data.
 
-### 2. Term 2 Dashboard Overview
-- **Four Dynamic Stat Cards** (computed dynamically from student records):
-  - **Total students**: `12` (`+3 this term`, green)
-  - **Average marks**: `72%` (`+2.1 vs last term`, green)
-  - **Average attendance**: `89%` (`-0.8 vs last term`, red)
-  - **Pass rate**: `92%` (`1 need support`, red)
-- **Three Analytics Charts** in a single desktop row:
-  - **Average Marks by Class**: Recharts bar chart for `10-A`, `10-B`, `9-A`, and `9-B` with soft violet (`#8b85ff`) bars.
-  - **Grade Distribution**: Recharts bar chart covering 5 grade buckets (`A`, `B`, `C`, `D`, `F`) with amber (`#f59e0b`) bars.
-  - **Attendance Trend**: Recharts line chart tracking staff attendance figures from June to November with purple line and amber indicator points.
-- **Top Performers**:
-  - Ranked leaderboard showing top scoring students (`Lakshmi Iyer 97%`, `Meera Menon 94%`, `Aarav Nair 88%`, `Joel Mathew 84%`, `Divya Pillai 81%`) with rank badges, muted class labels, and accent percentages.
+### 2. Configure Backend `.env`
+Create `backend/.env` (using `backend/.env.example` as a template):
+```env
+PORT=5000
+NODE_ENV=development
+FRONTEND_URL=http://localhost:3000
 
-### 3. Student Records Management (`/students`)
-- Comprehensive table listing all students with name, class badge, marks with mini progress bar, attendance percentage, and grade badge.
-- **Full CRUD Support**:
-  - **Add Student**: Registration modal with validation (name required, class select, marks 0–100, attendance 0–100, dynamic real-time grade preview).
-  - **View Student**: Detailed profile modal showing parent/guardian info, contact email, and academic standing.
-  - **Edit Student**: Pre-populated update modal that calculates revised grades on the fly.
-  - **Delete Student**: Modal confirmation prompt with target student name before deletion.
-- **Search & Filtering**:
-  - Real-time text search across student names and emails.
-  - Class filter dropdown (`All Classes`, `10-A`, `10-B`, `9-A`, `9-B`).
-  - Sorting options (`Highest Marks`, `Lowest Marks`, `Highest Attendance`, `Name A-Z`).
-- Graceful loading spinners, error banners with retry buttons, and empty states.
+# Your Supabase Project Settings -> API
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-or-anon-key
 
----
+# JWT Secret
+JWT_SECRET=your_jwt_secret_key_here
+JWT_EXPIRES_IN=7d
+```
 
-## 🌐 Deployment (Static Frontend)
-
-The application is built to be deployed seamlessly to platforms like **Vercel**, **Netlify**, or **Cloudflare Pages**.
-
-### 1. Build for Production
+### 3. Migrate Local Data to Supabase
+Run the automated migration script to populate Supabase with the seed dataset:
 ```bash
-npm run build
+npm run migrate
 ```
-This produces an optimized production bundle inside the `dist/` directory.
-
-### 2. Configure Backend API Endpoint
-By default, the application connects to `http://localhost:5000`. In production, supply your API URL using the `VITE_API_URL` environment variable:
-
-```bash
-# In your Vercel / Netlify environment variables:
-VITE_API_URL=https://your-api-domain.com
-```
-
-### 3. Deploy to Vercel
-```bash
-npm install -g vercel
-vercel
-```
-Ensure rewrite rules redirect all paths to `index.html` (for client-side routing):
-Create `vercel.json` if needed:
-```json
-{
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
-}
-```
-
-### 4. Deploy to Netlify
-When deploying to Netlify, add a `_redirects` file or `netlify.toml`:
-```
-/*    /index.html   200
-```
-
-> **Offline & Fallback Resilience**: The service layer includes a built-in localStorage fallback cache. Even if deployed as a standalone static demo without an active json-server backend, all CRUD operations and calculations remain fully functional and interactive in the user's browser!
+The script reads `db.json`, hashes staff passwords with bcrypt, checks for duplicates, and upserts all records into your Supabase database.
 
 ---
 
-## 📊 Seed Data Summary (`db.json`)
+## 🌐 Cloud Deployment
 
-- **12 Students** evenly distributed across `10-A`, `10-B`, `9-A`, and `9-B`.
-- Seed student profiles feature realistic Kerala-style names:
-  1. *Lakshmi Iyer* (10-A) — 97% Marks, 96% Attendance (Grade A)
-  2. *Meera Menon* (10-A) — 94% Marks, 95% Attendance (Grade A)
-  3. *Aarav Nair* (10-A) — 88% Marks, 92% Attendance (Grade B)
-  4. *Joel Mathew* (9-A) — 84% Marks, 90% Attendance (Grade B)
-  5. *Divya Pillai* (10-B) — 81% Marks, 91% Attendance (Grade B)
-  6. *Rohan Varghese* (9-B) — 76% Marks, 88% Attendance (Grade C)
-  7. *Ananya Kurian* (10-B) — 71% Marks, 89% Attendance (Grade C)
-  8. *Gautham Krishna* (9-A) — 68% Marks, 86% Attendance (Grade D)
-  9. *Sneha Nambiar* (9-B) — 63% Marks, 93% Attendance (Grade D)
-  10. *Ashwin Panicker* (10-B) — 58% Marks, 84% Attendance (Grade D)
-  11. *Fathima Beevi* (9-A) — 50% Marks, 87% Attendance (Grade D)
-  12. *Rahul Namboodiri* (9-B) — 34% Marks, 77% Attendance (Grade F — *Remedial support needed*)
+### 1. Deploy Backend (e.g. Render / Railway / Fly.io)
+1. Push your repository to GitHub.
+2. Create a new Web Service pointing to the `backend/` directory (or repository root).
+3. Set Build Command: `cd backend && npm install`
+4. Set Start Command: `node backend/src/server.js`
+5. Configure Environment Variables on your hosting provider:
+   - `PORT`: `5000` (or host provided)
+   - `NODE_ENV`: `production`
+   - `FRONTEND_URL`: `https://your-vedha-app.vercel.app`
+   - `SUPABASE_URL`: `https://your-project.supabase.co`
+   - `SUPABASE_SERVICE_ROLE_KEY`: `your-service-role-key`
+   - `JWT_SECRET`: `your_secure_jwt_secret`
+
+### 2. Deploy Frontend to Vercel
+1. Import the repository into [Vercel](https://vercel.com).
+2. Framework Preset: **Vite**
+3. Build Command: `npm run build`
+4. Output Directory: `dist`
+5. Configure Environment Variable:
+   - `VITE_API_URL`: `https://your-backend-api-domain.com/api`
+6. Click **Deploy**. Vercel will automatically apply `vercel.json` rewrites for SPA routing.
 
 ---
 
-## 📜 License
+## ⚡ Performance & Bundle Optimization
 
-Licensed under the MIT License. Developed for Vedha School Staff.
+- **Code Splitting**: Route-level lazy loading (`React.lazy()` + `Suspense`) keeps the initial entry chunk at **324 kB** (gzip: **105 kB**).
+- **On-Demand Loading**: Recharts and heavy dashboard visualizers load only when the `/dashboard` route is opened (`392 kB`).
+- **No Warnings**: The production build produces 0 bundle warnings and builds in ~1.1 seconds.
